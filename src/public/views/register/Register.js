@@ -1,4 +1,7 @@
 import Aview from '/public/js/AbstractView.js'
+import register from '/public/API/registration.js'
+import * as validator from '/public/views/register/validate.js'
+import sha256 from '/public/js/sha256.js';
 
 export default class extends Aview{
     constructor(){
@@ -15,22 +18,22 @@ export default class extends Aview{
                     <div class="row c-form">
                         <div class="col-12 col-lg-6 mt-3">
                             <label for="username" class="form-label">Username</label>
-                            <input type="text" id="username" name="username" class="form-control" aria-describedby="username">
+                            <input type="text" id="username" name="username" class="form-control" value="mpaterno" aria-describedby="username">
                         </div>
                         <div class="col-12 col-lg-6 mt-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" id="email" name="email" class="form-control" aria-describedby="email">
+                            <input type="email" id="email" name="email" class="form-control" value="mpaterno@test.it" aria-describedby="email">
                         </div>
                         <div class="col-12 col-lg-6 mt-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" name="password" id="password" class="form-control" aria-describedby="passwordHelpBlock">
+                            <input type="password" name="password" id="password" class="form-control" value="mpaterno7M?" aria-describedby="passwordHelpBlock">
                             <div id="passwordHelpBlock" class="form-text">
                                 Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
                             </div>
                         </div>
                         <div class="col-12 col-lg-6 mt-3">
                             <label for="confirmPassword" class="form-label">Confirm Password</label>
-                            <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" aria-describedby="passwordHelpBlock">
+                            <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" value="mpaterno7M?" aria-describedby="passwordHelpBlock">
                             <div id="passwordHelpBlock" class="form-text">
                                 Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
                             </div>
@@ -53,13 +56,23 @@ export default class extends Aview{
     onInit(){
         let cForm = document.querySelector(".c-form");
         let inputs = cForm.querySelectorAll("input");
+        let inputToValidate = document.querySelectorAll('.form-control');
         let formObj = {};
 
         document.querySelector("#register-submit").addEventListener("click", ()=>{
             inputs.forEach(el=>{
                 formObj[el.name] = el.value;
             })
-            console.log(formObj)
+            if (!validator.validateUsername(inputToValidate[0], inputToValidate[0].value) || !validator.validateEmail(inputToValidate[1], inputToValidate[1].value) || !validator.validatePassword(inputToValidate[2], inputToValidate[3], inputToValidate[2].value, inputToValidate[3].value)){
+                return ;
+            }
+            formObj.password = sha256(formObj.password)
+            delete formObj.confirmPassword;
+            register(formObj).then(el=>{
+                if (el){
+                    console.log('richiesta accettata')
+                }
+            })
         })
     }
     onDestroy(){

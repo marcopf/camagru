@@ -5,7 +5,7 @@ $username = "root"; // Change this if your MySQL username is different
 $password = "root"; // Change this if your MySQL password is set
 $dbname = "camagru"; // Change this to your desired database name
 $tableName = "users"; // Change this to your desired table name
-echo "Initializing database...\n";
+
 // Create connection
 $conn = new mysqli($servername, $username, $password);
 
