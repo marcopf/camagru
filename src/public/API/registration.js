@@ -1,5 +1,4 @@
 export default async function register(data){
-    console.log(data)
     const res = await fetch('http://localhost:8080/public/php/register.php', {
         method: "POST",
         headers: {

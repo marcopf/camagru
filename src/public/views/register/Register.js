@@ -2,6 +2,7 @@ import Aview from '/public/js/AbstractView.js'
 import register from '/public/API/registration.js'
 import * as validator from '/public/views/register/validate.js'
 import sha256 from '/public/js/sha256.js';
+import Router from "/public/js/mainRouterFunc.js"
 
 export default class extends Aview{
     constructor(){
@@ -70,12 +71,15 @@ export default class extends Aview{
             delete formObj.confirmPassword;
             register(formObj).then(el=>{
                 if (el){
-                    console.log('richiesta accettata')
+                    history.pushState(null, null, '/login');
+                    Router();
+                }
+                else{
+                    document.querySelector('.shadow').style.border = "3px solid red"
                 }
             })
         })
     }
     onDestroy(){
-        console.log("distruggo Register")
     }
 }

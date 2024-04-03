@@ -1,7 +1,12 @@
 import Routes from "/public/js/path.js"
+import navbar from '/public/views/navBar.js'
 
 let fRoute = 0;
 let memory = 0;
+
+function clearCookie(cookieName) {
+    document.cookie = cookieName + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+}
 
 const Router =()=>{
 	let matechedLocation = 0;
@@ -28,8 +33,16 @@ const Router =()=>{
 	}
 	document.querySelector("#app").innerHTML = "";
 	setTimeout(() => {
+		let nav = new navbar;
+		document.querySelector("#navbar-container").innerHTML = nav.getHtml();
 		document.querySelector("#app").innerHTML = matechedLocation.getHtml();
 		matechedLocation.onInit();
+		document.querySelector('.logout').addEventListener('click', ()=>{
+            clearCookie();
+            localStorage.clear();
+            history.pushState(null, null, '/login');
+            Router();
+        })
 	}, 50);
 	
 	//setup the listener for submit button

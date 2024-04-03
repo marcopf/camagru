@@ -16,6 +16,5 @@ export default class extends Aview{
     onInit(){
     }
     onDestroy(){
-        console.log("distruggo Register")
     }
 }

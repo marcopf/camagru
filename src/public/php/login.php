@@ -9,35 +9,58 @@ $database = "camagru"; // Change this to your database name
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
-print_r($data['username'])
-// // Create connection
-// $conn = new mysqli($servername, $username, $password, $database);
+// Create connection
+$conn = new mysqli($servername, $username, $password, $database);
 
-// // Check connection
-// if ($conn->connect_error) {
-//     die("Connection failed: " . $conn->connect_error);
-// }
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
-// // Check if JSON data was successfully decoded
-// if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
-//     // Error decoding JSON
-//     http_response_code(400); // Bad Request
-//     echo json_encode(array("error" => "Invalid JSON data"));
-//     exit;
-// }
+// Check if JSON data was successfully decoded
+if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+    // Error decoding JSON
+    http_response_code(400); // Bad Request
+    echo json_encode(array("error" => "Invalid JSON data"));
+    exit;
+}
 
-// $username = $data['username'];
-// $email = $data['email'];
-// $password = $data['password'];
+$username = $data['username'];
+$password = hash('sha256', $data['password']);
 
-// $sql = "INSERT INTO users (username, email, user_password) VALUES ('$username', '$email', '$password')";
+if (!preg_match("/^[a-z0-9]{5,}$/", $username)){
+    http_response_code(401);
+    exit;
+}
+// Prepare a SQL statement with a parameter placeholder
+$stmt = $conn->prepare("SELECT * FROM users WHERE username = ? AND user_password = ?");
 
-// if ($conn->query($sql) === TRUE) {
-//     echo "New record inserted successfully";
-// } else {
-//     echo "Error: " . $sql . "<br>" . $conn->error;
-// }
+// Bind parameters
+$stmt->bind_param("ss", $username, $password);
 
-// // Close connection
-// $conn->close();
+
+// Execute the prepared statement
+$stmt->execute();
+
+// Get the result
+$result = $stmt->get_result();
+
+// Check if any rows were returned
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    session_id($row['id']);
+    session_start();
+    http_response_code(200);
+} else {
+    // No matching user found
+    http_response_code(401);
+    echo "Username and password do not match";
+}
+
+// Close statement
+$stmt->close();
+
+// Close connection
+$conn->close();
+
 ?>

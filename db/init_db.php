@@ -25,8 +25,8 @@ $conn->select_db($dbname);
 
 // Create table
 $sql = "CREATE TABLE IF NOT EXISTS $tableName (
-    id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    username CHAR(255) NOT NULL,
+    id CHAR(13) PRIMARY KEY,
+    username CHAR(255) NOT NULL UNIQUE,
     user_password CHAR(255) NOT NULL,
     email CHAR(255) NOT NULL,
     reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

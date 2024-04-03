@@ -1,4 +1,7 @@
 import Aview from '/public/js/AbstractView.js'
+import login from '/public/API/login.js'
+import sha256 from '/public/js/sha256.js';
+import Router from "/public/js/mainRouterFunc.js"
 
 export default class extends Aview{
     constructor(){
@@ -46,10 +49,18 @@ export default class extends Aview{
             inputs.forEach(el=>{
                 formObj[el.name] = el.value;
             })
-            console.log(formObj)
+            formObj.password = sha256(formObj.password)
+            login(formObj).then(res=>{
+                if (res){
+                    localStorage.setItem('logged', formObj.username);
+                    history.pushState(null, null, '/home');
+                    Router();
+                }else{
+                    document.querySelector('.shadow').style.border = "3px solid red"
+                }
+            })
         })
     }
     onDestroy(){
-        console.log("distruggo Login")
     }
 }
